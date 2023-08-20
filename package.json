@@ -1,7 +1,7 @@
 {
   "name": "cfjb-js-logger",
   "displayName": "cfjb-js-logger",
-  "description": "Configable js logger",
+  "description": "Configurable js logger",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.81.0"
@@ -12,10 +12,58 @@
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
-      "command": "cfjb-js-logger.helloWorld",
-      "title": "Hello World"
-    }]
+    "languages": [
+      {
+        "id": "javascript",
+        "aliases": ["JavaScript", "javascript", "js"],
+        "extensions": [".js"]
+      },
+      {
+        "id": "typescript",
+        "aliases": ["TypeScript", "typescript", "ts"],
+        "extensions": [".ts"]
+      }
+    ],
+    "commands": [
+      {
+        "command": "extension.log",
+        "title": "Configurable js logger' log"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.log",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "cfjb-js-logger configuration",
+      "properties": {
+        "loggerFunction": {
+          "type": "string",
+          "default": "logger.debug2",
+          "description": "Logger's log function string."
+        },
+        "insertFunctionNameEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inserting function name."
+        },
+        "functionNameSuffix": {
+          "type": "string",
+          "default": "_",
+          "description": "Function name suffix which will be added after function name string."
+        },
+        "useSemiColon": {
+          "type": "boolean",
+          "default": "true",
+          "description": "Use semi colon after function call."
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",
