@@ -1,8 +1,8 @@
 {
   "name": "cfjb-js-logger",
-  "displayName": "cfjb-js-logger",
-  "description": "Configurable js logger",
-  "version": "0.0.1",
+  "displayName": "vscode-cfjb-js-logger",
+  "description": "Vscode configurable js logger",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.81.0"
   },
@@ -44,7 +44,7 @@
       "properties": {
         "loggerFunction": {
           "type": "string",
-          "default": "logger.debug2",
+          "default": "logger.debug",
           "description": "Logger's log function string."
         },
         "insertFunctionNameEnabled": {

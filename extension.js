@@ -77,11 +77,12 @@ function activate(context) {
 		//const config = vscode.workspace.getConfiguration('cfjb-js-logger');
 		const config = vscode.workspace.getConfiguration();
 		console.log('config:', config);
-		const loggerFunction = config.get('loggerFunction', "logger.debug2")
+		const loggerFunction = config.get('loggerFunction', "logger.debug")
 		const insertFunctionNameEnabled = config.get('insertFunctionNameEnabled', true);
-		const functionNameSuffix = config.get('functionNameSuffix', '');
+		const functionNameSuffix = config.get('functionNameSuffix', '_');
+		const useSemiColon = config.get('useSemiColon', true);
+		const semiColon = useSemiColon ? ';' : '';
 		console.log('loggerFunction:', loggerFunction, 'insertFunctionNameEnabled:', insertFunctionNameEnabled, 'functionNameSuffix:', functionNameSuffix);
-
 
 		let funcName = '';
 		if (insertFunctionNameEnabled) {
@@ -100,10 +101,10 @@ function activate(context) {
 
 		if (text) {
             await vscode.commands.executeCommand('editor.action.insertLineAfter')
-			const logToInsert = `${loggerFunction}('${funcName}. ${text}:', ${text});`;
+			const logToInsert = `${loggerFunction}('${funcName}. ${text}:', ${text})${semiColon}`;
 			insertText(logToInsert);
 		} else {
-            insertText(`${loggerFunction}('${funcName}.');`);
+            insertText(`${loggerFunction}('${funcName}.')${semiColon}`);
 		}
 
 		//vscode.window.showInformationMessage('Hello World from cfjb-js-logger!');
