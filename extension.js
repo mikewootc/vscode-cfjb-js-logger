@@ -19,12 +19,25 @@ const insertText = (text) => {
     });
 };
 
-function findContainingSymbol(symbols, position) {
+function findContainingSymbol(symbols, position, parentKind) {
     for (const symbol of symbols) {
+		console.log('symbol:', symbol);
         if (symbol.range.contains(position)) {
-            return symbol;
+			if (symbol.kind == vscode.SymbolKind.Function) {
+				console.log('Found function');
+				return symbol;
+			}
+			if (symbol.kind == vscode.SymbolKind.Method) {
+				console.log('Found method');
+				return symbol;
+			}
+			if (parentKind == vscode.SymbolKind.Class && symbol.kind == vscode.SymbolKind.Property) {
+				// Some class's function is like: getData = () => {}, which will considered as a 'Property' but not a 'Method' or 'Function'
+				console.log('Found class property');
+				return symbol;
+			}
         }
-        const childSymbol = findContainingSymbol(symbol.children, position);
+        const childSymbol = findContainingSymbol(symbol.children, position, symbol.kind);
         if (childSymbol) {
             return childSymbol;
         }
@@ -46,7 +59,7 @@ async function getCurrentFuncName() {
 				const currentPosition = editor.selection.active;
 
 				// 在符号信息中查找包含光标的函数符号
-				const containingSymbol = findContainingSymbol(symbols, currentPosition);
+				const containingSymbol = findContainingSymbol(symbols, currentPosition, -1);
 				if (containingSymbol) {
 					const functionName = containingSymbol.name;
 					console.log('functionName:>>>>', functionName, '<<<<');
