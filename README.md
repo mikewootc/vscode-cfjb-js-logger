@@ -13,9 +13,15 @@ Support use on both selected text and unselected space.
     1. Select text
     2. Press `Ctrl+Shift+L`
 
+    screenshot:
+
+    ![sample_selected_text](./images/sample_selected_text.gif)
+
 * Use on unselected space
 
     1. Press `Ctrl+Shift+L`
+
+    ![sample_unselect_text](./images/sample_unselect_text.gif)
 
 ## Extension Settings
 

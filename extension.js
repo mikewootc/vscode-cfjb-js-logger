@@ -27,6 +27,10 @@ function findContainingSymbol(symbols, position, parentKind) {
 				console.log('Found function');
 				return symbol;
 			}
+			if (symbol.kind == vscode.SymbolKind.Constructor) {
+				console.log('Found ctr');
+				return symbol;
+			}
 			if (symbol.kind == vscode.SymbolKind.Method) {
 				console.log('Found method');
 				return symbol;
