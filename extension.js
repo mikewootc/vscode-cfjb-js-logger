@@ -19,29 +19,66 @@ const insertText = (text) => {
     });
 };
 
-function findContainingSymbol(symbols, position, parentKind) {
+
+
+// Class = 4,
+// Method = 5,
+// Property = 6,
+// Field = 7,
+// Constructor = 8,
+// Interface = 10,
+// Function = 11,
+// Variable = 12,
+// Array = 17,
+// Object = 18,
+// Key = 19,
+function findContainingSymbol(symbols, position, parent, indent) {
+    const editor = vscode.window.activeTextEditor;
+
     for (const symbol of symbols) {
-		console.log('symbol:', symbol);
+		console.log(indent, 'symbol:', symbol);
         if (symbol.range.contains(position)) {
 			if (symbol.kind == vscode.SymbolKind.Function) {
-				console.log('Found function');
-				return symbol;
+				console.log(indent, 'Found function');
+				if (symbol.name == '<function>') { // Anonymous function use parent's name
+					return parent;
+				} else {
+					return symbol;
+				}
 			}
 			if (symbol.kind == vscode.SymbolKind.Constructor) {
-				console.log('Found ctr');
+				console.log(indent, 'Found ctr');
 				return symbol;
 			}
 			if (symbol.kind == vscode.SymbolKind.Method) {
-				console.log('Found method');
+				console.log(indent, 'Found method');
 				return symbol;
 			}
-			if (parentKind == vscode.SymbolKind.Class && symbol.kind == vscode.SymbolKind.Property) {
+			if (parent && parent.kind == vscode.SymbolKind.Class && symbol.kind == vscode.SymbolKind.Property) {
 				// Some class's function is like: getData = () => {}, which will considered as a 'Property' but not a 'Method' or 'Function'
-				console.log('Found class property');
+				console.log(indent, 'Found class property');
 				return symbol;
 			}
+			if (symbol.kind == vscode.SymbolKind.Variable) {
+				// Some function is arrow function which assigned to a variable, like: const getData = () => {}. Check the first line contains '=>' and '{' to determine if it's a arrow function
+				const line = editor.document.lineAt(symbol.range.c);
+				//console.log(indent, 'Found variable. line:', line.text);
+				let regArrow = new RegExp(`${symbol}.*=>.*{`);
+				if (regArrow.test(line.text)) {
+					console.log(indent, 'Found arrow function:', line.text);
+					return symbol;
+				}
+
+				let regFunc = new RegExp(`${symbol}.*function.*(.*).*{`);
+				if (regFunc.test(line.text)) {
+					console.log(indent, 'Found function 2 variable:', line.text);
+					return symbol;
+				}
+			}
+
+
         }
-        const childSymbol = findContainingSymbol(symbol.children, position, symbol.kind);
+        const childSymbol = findContainingSymbol(symbol.children, position, symbol, indent + '  ');
         if (childSymbol) {
             return childSymbol;
         }
@@ -63,7 +100,7 @@ async function getCurrentFuncName() {
 				const currentPosition = editor.selection.active;
 
 				// 在符号信息中查找包含光标的函数符号
-				const containingSymbol = findContainingSymbol(symbols, currentPosition, -1);
+				const containingSymbol = findContainingSymbol(symbols, currentPosition, null, '');
 				if (containingSymbol) {
 					const functionName = containingSymbol.name;
 					console.log('functionName:>>>>', functionName, '<<<<');
@@ -137,3 +174,6 @@ module.exports = {
 	activate,
 	deactivate
 }
+
+
+
